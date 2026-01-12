@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liver Disease Predictor AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="background-shape shape-1"></div>
+    <div class="background-shape shape-2"></div>
+    
+    <div class="container">
+        <header>
+            <h1>Liver Guard AI</h1>
+            <p>Advanced Multi-Class Staging System</p>
+        </header>
+        
+        <div class="glass-panel">
+            <form id="predictionForm">
+                <div class="input-grid">
+                    <!-- Personal Info -->
+                    <div class="input-group">
+                        <label>Age</label>
+                        <input type="number" name="Age" placeholder="e.g. 45" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Gender</label>
+                        <select name="Gender">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Bilirubin -->
+                    <div class="input-group">
+                        <label>Total Bilirubin</label>
+                        <input type="number" step="0.1" name="Total_Bilirubin" placeholder="e.g. 0.9" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Direct Bilirubin</label>
+                        <input type="number" step="0.1" name="Direct_Bilirubin" placeholder="e.g. 0.2" required>
+                    </div>
+                    
+                    <!-- Enzymes -->
+                    <div class="input-group">
+                        <label>Alkaline Phosphotase</label>
+                        <input type="number" name="Alkaline_Phosphotase" placeholder="e.g. 200" required>
+                    </div>
+                    <div class="input-group">
+                        <label>SGPT (Alamine)</label>
+                        <input type="number" name="Alamine_Aminotransferase" placeholder="e.g. 30" required>
+                    </div>
+                    <div class="input-group">
+                        <label>SGOT (Aspartate)</label>
+                        <input type="number" name="Aspartate_Aminotransferase" placeholder="e.g. 40" required>
+                    </div>
+                    
+                    <!-- Proteins -->
+                    <div class="input-group">
+                        <label>Total Proteins</label>
+                        <input type="number" step="0.1" name="Total_Protiens" placeholder="e.g. 6.8" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Albumin</label>
+                        <input type="number" step="0.1" name="Albumin" placeholder="e.g. 3.3" required>
+                    </div>
+                    <div class="input-group">
+                        <label>A/G Ratio</label>
+                        <input type="number" step="0.1" name="Albumin_and_Globulin_Ratio" placeholder="e.g. 0.9" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="predict-btn">Analyze Liver Health</button>
+            </form>
+            
+            <div id="result-area" class="hidden">
+                <div class="loader hidden" id="loader"></div>
+                <div id="result-content" class="hidden">
+                    <h2>Prediction: <span id="prediction-text" class="highlight">Normal</span></h2>
+                    <p>Confidence: <span id="confidence-text">95%</span></p>
+                    
+                    <div class="prob-bars" id="prob-bars">
+                        <!-- Bars injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const resultArea = document.getElementById('result-area');
+            const loader = document.getElementById('loader');
+            const resultContent = document.getElementById('result-content');
+            
+            resultArea.classList.remove('hidden');
+            loader.classList.remove('hidden');
+            resultContent.classList.add('hidden');
+            
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                loader.classList.add('hidden');
+                resultContent.classList.remove('hidden');
+                
+                if(data.error) {
+                    document.getElementById('prediction-text').innerText = "Error";
+                    alert(data.error);
+                } else {
+                    const predText = document.getElementById('prediction-text');
+                    predText.innerText = data.result;
+                    document.getElementById('confidence-text').innerText = data.confidence;
+                    
+                    // Color coding
+                    predText.className = 'highlight ' + data.result.replace(' ', '-').toLowerCase();
+                    
+                    // Bars
+                    const barsContainer = document.getElementById('prob-bars');
+                    barsContainer.innerHTML = '';
+                    for (const [cls, prob] of Object.entries(data.probabilities)) {
+                        const val = parseFloat(prob);
+                        const bar = document.createElement('div');
+                        bar.className = 'prob-row';
+                        bar.innerHTML = `
+                            <span class="label">${cls}</span>
+                            <div class="bar-bg"><div class="bar-fill" style="width: ${val}%"></div></div>
+                            <span class="percent">${prob}</span>
+                        `;
+                        barsContainer.appendChild(bar);
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                loader.classList.add('hidden');
+                alert("An error occurred.");
+            }
+        });
+    </script>
+</body>
+</html>
