@@ -1,7 +1,7 @@
-# 📘 Liver Disease Prediction: The Master Guide
+# 📘 Liver Disease Prediction: 
 
 **Project Name**: Multi-Class Liver Disease Prediction System
-**Architecture**: Hybrid Stacking Ensemble ("The Dream Team")
+**Architecture**: Hybrid Stacking Ensemble 
 **Status**: Production Ready (Web App Deployed)
 **Performance**: 84.62% Test Accuracy
 
@@ -18,10 +18,10 @@ To achieve this, we transformed the `Indian Liver Patient Dataset` using advance
 
 ---
 
-## 2. 🧬 The "Super" Data Workflow
+## 2. 🧬 The Data Workflow
 *Implemented in `data_processor.py`*
 
-### A. Label Engineering (The "Special Sauce")
+### A. Label Engineering 
 The original dataset was binary (Patient vs. Non-Patient). We created 4 classes using **K-Means Clustering**:
 -   **Logic**: We took sick patients and clustered them based on severity markers (Bilirubin, Enzymes, Albumin).
 -   **Result**:
@@ -50,7 +50,7 @@ We added medical ratios that doctors use:
 
 ---
 
-## 3. 🧠 The "Dream Team" Architecture
+## 3. 🧠 The Architecture
 *Implemented in `model_engine.py`*
 
 We don't rely on one model. We use a **Stacking Ensemble**.
@@ -136,7 +136,7 @@ python app.py
 
 # Project Journal: Multi-Class Liver Disease Prediction
 
-## [ENTRY] The "Super" Workflow Strategy
+## [ENTRY] The Workflow Strategy
 
 **Date**: 2026-01-11
 **Objective**: Transform the binary ILPD dataset into a multi-class prediction system with high clinical relevance.
